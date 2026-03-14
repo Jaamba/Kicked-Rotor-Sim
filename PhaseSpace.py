@@ -1,53 +1,51 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# parametro di caos
 K = 1.2
-
-# numero di iterazioni
 N = 1000
+M = 50
 
-# numero di tentativi
-M = 20
-
-# Crea una griglia di valori iniziali
 theta0 = np.linspace(0, 2*np.pi, M)
 p0 = np.linspace(-np.pi, np.pi, M)
 
-# Colormap per bellezza
+nx = 1000
+ny = 1000
+
+img = np.zeros((ny, nx, 3))
+powerCoeff = np.ones((ny, nx, 1))
+
 cmap = plt.cm.viridis
 
-# aumenta la risoluzione
-plt.figure(dpi=300)
+counter = 0
 
-# Cicla sulle condizioni inizali
 for i in range(M):
     for j in range(M):
 
-        theta_list = []
-        p_list = []
+        counter += 1
+        if counter % M*M/10000 == 0:
+            print('Generating image: ' + str(counter/(M*M)*100) + '%')
 
-        # Condizione iniziale
         theta = theta0[i]
         p = p0[j]
 
-        # Fa evolvere la ij-esima traiettoria
+        color = np.random.rand()
+
         for k in range(N):
-        
+
             p = p + K*np.sin(theta)
-            theta = theta + p
-        
-            theta = theta % (2*np.pi)
-        
-            theta_list.append(theta)
-            p_list.append(p)
+            theta = (theta + p) % (2*np.pi)
 
-        # normalizza theta0 in [0,1] per la colormap
-        col = cmap(theta0[i] / (2*np.pi))
+            xi = int(theta/(2*np.pi) * (nx-1))
+            yi = int((p + np.pi)/(2*np.pi) * (ny-1))
 
-        # Disegna la j-esima traiettoria con un colore casuale
-        plt.scatter(theta_list, p_list, s = 0.1, color=col)
+            if 0 <= yi < ny:
+                img[yi, xi] = img[yi, xi] + [(i%10)/10, (j%10)/10, color]
+                powerCoeff[yi, xi] = powerCoeff[yi, xi] + 1
 
+img = img / np.pow(powerCoeff,1/1.4)
+
+plt.figure(dpi=300)
+plt.imshow(img, origin="lower")
 plt.xlabel("theta")
 plt.ylabel("p")
 plt.title("Kicked Rotor Phase Space")
