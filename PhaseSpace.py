@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-K = 1.2
+K = 0.7
 N = 1000
 M = 50
 
