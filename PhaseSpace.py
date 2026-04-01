@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-K = 0.7
+K = 0.9
 N = 1000
 M = 50
 
@@ -44,10 +44,19 @@ for i in range(M):
 
 img = img / np.pow(powerCoeff,1/1.4)
 
-plt.figure(dpi=300)
-plt.imshow(img, origin="lower")
-plt.xlabel("theta")
-plt.ylabel("p")
-plt.title("Kicked Rotor Phase Space")
+fig, ax = plt.subplots(dpi=300)
+ax.imshow(img, origin="lower")
+
+ax.set_xlabel("θ")
+ax.set_ylabel("P")
+title = "K = " + str(K)
+
+ax.set_xticks([0, 500, 1000])
+ax.set_xticklabels(["0", "π", "2π"])
+
+ax.set_yticks([0, 500, 1000])
+ax.set_yticklabels(["-π", "0", "π"])
+
+plt.subplots_adjust(left=0.1, right=0.95, top=0.9, bottom=0.1)
 
 plt.show()
