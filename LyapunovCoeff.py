@@ -25,17 +25,16 @@ def computeLyapunov(initialCondition, dx, N, K):
     d0 = np.sqrt( dx[0]**2 + dx[1]**2 )
 
     # Returns local lyapunov coefficent
-    return np.log(d/d0)/(N*K)
+    return np.log(d/d0)/(N)
 
-K = 1.2
+K = 0.9
 N = 100
 M = 500
 
 theta0 = np.linspace(0, 2*np.pi, M)
 p0 = np.linspace(-np.pi, np.pi, M)
 
-# For L directions in the phase space, Lyapunov exponents are computed. The maximum is then chosen
-L = 10
+# For 2 directions in the phase space, Lyapunov exponents are computed. The maximum is then chosen
 dx0 = 0.0001
 
 # Lyapunov coefficents for each initial condition
@@ -48,29 +47,39 @@ for i in range(M):
         theta = theta0[i]
         p = p0[j]
 
-        lyap = 0
-        for k in range(L):
-            phi = np.linspace(0, 2*np.pi, L)
-            dx = [dx0*np.cos(phi[k]), dx0*np.sin(phi[k])]
-
-            # Choses maximum lyap. coeff
-            lyapNew = computeLyapunov( (theta, p), dx, N, K)
-            if(lyap < lyapNew):
-                lyap = lyapNew
+        # Computes lyap. coeff
+        lyap1 = computeLyapunov( (theta, p), [dx0, 0], N, K)
+        lyap2 = computeLyapunov( (theta, p), [0, dx0], N, K)
+        lyap = lyap1
+        
+        # Choses maximum lyap. coeff
+        if(lyap1 < lyap2):
+            lyap = lyap2
             
-        lyapunovCoeff[i,j] = lyap
+        lyapunovCoeff[j,i] = lyap
 
         # Prints progress
         counter = counter + 1
         if counter % ((M*M)/100) == 0:
             print("Computing coefficients: " + str(counter/(M*M)*100) + "%")
 
+fig, ax = plt.subplots(dpi=300)
 
-# Plots Lyapunov coefficients
-fig2 = plt.figure()
+im = ax.imshow(lyapunovCoeff, origin="lower")  # salva l'immagine
 
-plt.imshow(lyapunovCoeff, origin='lower', cmap='viridis')
-plt.colorbar()
+ax.set_xlabel("θ")
+ax.set_ylabel("P")
+title = "K = " + str(K)
+
+ax.set_xticks([0, M/2, M])
+ax.set_xticklabels(["0", "π", "2π"])
+
+ax.set_yticks([0, M/2, M])
+ax.set_yticklabels(["-π", "0", "π"])
+
+fig.colorbar(im, ax=ax)  # aggiungi la colorbar
+
+plt.subplots_adjust(left=0.1, right=0.95, top=0.9, bottom=0.1)
 plt.show()
 
 
