@@ -1,12 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import colormaps
 
-K = 2
+K = 4
 N = 1000
-M = 50
+M = 5
 
 center = [np.pi, 0]
-size = 2*np.pi
+size = np.pi/4
 
 theta0 = np.linspace(center[0] - size/2, center[0] + size/2, M)
 p0 = np.linspace(center[1] - size/2, center[1] + size/2, M)
@@ -17,9 +18,9 @@ ny = 1000
 img = np.zeros((ny, nx, 3))
 powerCoeff = np.ones((ny, nx, 1))
 
-cmap = plt.cm.viridis
-
 counter = 0
+
+cmap = plt.get_cmap('hsv')
 
 for i in range(M):
     for j in range(M):
@@ -31,7 +32,7 @@ for i in range(M):
         theta = theta0[i]
         p = p0[j]
 
-        color = np.random.rand()
+        col = np.random.random()
 
         for k in range(N):
 
@@ -49,10 +50,10 @@ for i in range(M):
 
 
             if 0 <= yi < ny and 0 <= xi < nx:
-                img[yi, xi] = img[yi, xi] + [(i%10)/10, (j%10)/10, color]
+                img[yi, xi] = img[yi, xi] + cmap(col)[:3]
                 powerCoeff[yi, xi] = powerCoeff[yi, xi] + 1
 
-img = img / np.pow(powerCoeff,1/1.4)
+img = img / powerCoeff
 
 fig, ax = plt.subplots(dpi=300)
 ax.imshow(img, origin="lower")
