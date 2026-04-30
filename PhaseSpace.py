@@ -1,12 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-K = 0.9
+K = 2
 N = 1000
 M = 50
 
-theta0 = np.linspace(0, 2*np.pi, M)
-p0 = np.linspace(-np.pi, np.pi, M)
+center = [np.pi, 0]
+size = 2*np.pi
+
+theta0 = np.linspace(center[0] - size/2, center[0] + size/2, M)
+p0 = np.linspace(center[1] - size/2, center[1] + size/2, M)
 
 nx = 1000
 ny = 1000
@@ -32,13 +35,20 @@ for i in range(M):
 
         for k in range(N):
 
-            p = p + K*np.sin(theta)
+            p = (p + K*np.sin(theta))
             theta = (theta + p) % (2*np.pi)
 
-            xi = int(theta/(2*np.pi) * (nx-1))
-            yi = int((p + np.pi)/(2*np.pi) * (ny-1))
+            if theta > center[0] + size/2 or theta < center[0] - size/2:
+                continue
 
-            if 0 <= yi < ny:
+            if p > center[1] + size/2 or p < center[1] - size/2:
+                continue
+
+            xi = int((theta - center[0] + size/2)/(size) * (nx-1))
+            yi = int((p - center[1] + size/2)/(size) * (ny-1))
+
+
+            if 0 <= yi < ny and 0 <= xi < nx:
                 img[yi, xi] = img[yi, xi] + [(i%10)/10, (j%10)/10, color]
                 powerCoeff[yi, xi] = powerCoeff[yi, xi] + 1
 
@@ -52,10 +62,10 @@ ax.set_ylabel("P")
 title = "K = " + str(K)
 
 ax.set_xticks([0, 500, 1000])
-ax.set_xticklabels(["0", "π", "2π"])
+ax.set_xticklabels([f"{(center[0]-size/2):.3f}", f"{(center[0]):.3f}", f"{(center[0]+size/2):.3f}"])
 
 ax.set_yticks([0, 500, 1000])
-ax.set_yticklabels(["-π", "0", "π"])
+ax.set_yticklabels([f"{(center[1]-size/2):.3f}", f"{(center[1]):.3f}", f"{(center[1]+size/2):.3f}"])
 
 plt.subplots_adjust(left=0.1, right=0.95, top=0.9, bottom=0.1)
 
